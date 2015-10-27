@@ -24,15 +24,14 @@
 #define IDC_STATIC_FRAME                1008
 #define IDC_STATIC2                     1009
 #define IDC_STATIC3                     1010
-#define IDC_Subsense                    1011
 #define IDC_BUTTON_End1                 1012
 #define IDC_BUTTON_Start2               1013
 #define IDC_BUTTON_end2                 1014
 #define IDC_BUTTON_Suspend              1015
 #define IDC_BUTTON_Resume               1016
 #define IDC_BUTTON_Start                1017
-#define IDC_BUTTON                      1021
 #define IDC_BUTTON_End3                 1021
+#define IDC_EDIT3                       1022
 #define ID_MYMENU_OPENNEWFILE           32771
 #define ID_BUTTON32772                  32772
 #define ID_MYMENU_SUBSENSE              32773
@@ -43,7 +42,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        312
 #define _APS_NEXT_COMMAND_VALUE         32775
-#define _APS_NEXT_CONTROL_VALUE         1022
+#define _APS_NEXT_CONTROL_VALUE         1023
 #define _APS_NEXT_SYMED_VALUE           310
 #endif
 #endif

@@ -40,4 +40,5 @@ public:
 	afx_msg void OnBnClickedButtonSuspend();
 	afx_msg void OnBnClickedButtonResume();
 	CWinThread* mythread;
+	int m_k;
 };

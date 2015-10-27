@@ -15,6 +15,7 @@ IMPLEMENT_DYNAMIC(SubSense, CDialog)
 
 SubSense::SubSense(CWnd* pParent /*=NULL*/)
 	: CDialog(SubSense::IDD, pParent)
+	, m_k(100)
 {
 	isStop = false;
 	m_nTimer = 0;
@@ -27,11 +28,13 @@ SubSense::~SubSense()
 void SubSense::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
+	DDX_Text(pDX, IDC_EDIT2, m_k);
+	DDV_MinMaxInt(pDX, m_k, 0, 100);
 }
 
 
 BEGIN_MESSAGE_MAP(SubSense, CDialog)
-	ON_BN_CLICKED(IDC_Subsense, &SubSense::OnBnClickedSubsense)
+//	ON_BN_CLICKED(IDC_Subsense, &SubSense::OnBnClickedSubsense)
 	ON_BN_CLICKED(IDC_BUTTON_Break, &SubSense::OnBnClickedButtonBreak)
 	ON_WM_TIMER()
 	ON_BN_CLICKED(IDC_BUTTON_Start1, &SubSense::OnBnClickedButtonStart1)
@@ -57,6 +60,7 @@ BOOL SubSense::OnInitDialog()
 
 void SubSense::OnBnClickedSubsense()
 {
+	//已废弃
 	// TODO: 在此添加控件通知处理程序代码
 	CString tmp;
 	GetDlgItemText(IDC_EDIT1, tmp);
@@ -92,6 +96,7 @@ void SubSense::DrawPicToHDC(IplImage* img, UINT ID)
 	img = img2;
 	CvvImage cimg;
 	cimg.CopyOf(img);
+	cvReleaseImage(&img2);
 	CRect drawRect;
 	drawRect.SetRect(rect.TopLeft().x, rect.TopLeft().y, rect.TopLeft().x + img->width - 1, rect.TopLeft().y + img->height - 1);
 	cimg.DrawToHDC(hDc, &drawRect);
@@ -186,7 +191,7 @@ void SubSense::DoSubsense(CString pathName, bool openCameral)
             break;
         //oBGSAlg(oCurrInputFrame,oCurrSegmMask,double(k<=100)); // lower rate in the early frames helps bootstrap the model when foreground is present
 		tbeg = clock();
-		oBGSAlg(oCurrInputFrame,oCurrSegmMask,double(100));
+		oBGSAlg(oCurrInputFrame,oCurrSegmMask,double(m_k));
         oBGSAlg.getBackgroundImage(oCurrReconstrBGImg);
 		tend = clock();
 
@@ -229,6 +234,7 @@ void SubSense::DoSubsense(CString pathName, bool openCameral)
 
 void SubSense::OnBnClickedButtonBreak()
 {
+	//已废弃
 	// TODO: 在此添加控件通知处理程序代码
 	isStop = true;
 }
@@ -301,7 +307,7 @@ void SubSense::OnTimer(UINT_PTR nIDEvent)
 					break;
 				//oBGSAlg(oCurrInputFrame,oCurrSegmMask,double(k<=100)); // lower rate in the early frames helps bootstrap the model when foreground is present
 				tbeg = clock();
-				oBGSAlg(oCurrInputFrame,oCurrSegmMask,double(100));
+				oBGSAlg(oCurrInputFrame,oCurrSegmMask,double(m_k));
 				oBGSAlg.getBackgroundImage(oCurrReconstrBGImg);
 				tend = clock();
 
@@ -325,6 +331,7 @@ void SubSense::OnTimer(UINT_PTR nIDEvent)
 
 void SubSense::OnBnClickedButtonStart1()
 {
+	//已经不是用
 	// TODO: 在此添加控件通知处理程序代码
 	GetDlgItem(IDC_BUTTON_Start1)->EnableWindow(FALSE);
 	GetDlgItem(IDC_BUTTON_Start2)->EnableWindow(FALSE);
@@ -358,14 +365,13 @@ void SubSense::OnBnClickedButtonEnd1()
 void SubSense::OnBnClickedButtonStart2()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	GetDlgItem(IDC_BUTTON_Start1)->EnableWindow(FALSE);
 	GetDlgItem(IDC_BUTTON_Start2)->EnableWindow(FALSE);
-	GetDlgItem(IDC_BUTTON_End1)->EnableWindow(FALSE);
-	isStop = false;
-	
-	mythread = AfxBeginThread(SubSense::MyThreadFun, this);
-
+	GetDlgItem(IDC_BUTTON_Suspend)->EnableWindow(TRUE);
+	GetDlgItem(IDC_BUTTON_Resume)->EnableWindow(FALSE);
 	GetDlgItem(IDC_BUTTON_end2)->EnableWindow(TRUE);
+	isStop = false;	
+	mythread = AfxBeginThread(SubSense::MyThreadFun, this);
+	
 
 }
 
@@ -373,11 +379,11 @@ void SubSense::OnBnClickedButtonStart2()
 void SubSense::OnBnClickedButtonend2()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	GetDlgItem(IDC_BUTTON_end2)->EnableWindow(FALSE);
-	GetDlgItem(IDC_BUTTON_End1)->EnableWindow(FALSE);
-	isStop = true;
-	GetDlgItem(IDC_BUTTON_Start1)->EnableWindow(TRUE);
 	GetDlgItem(IDC_BUTTON_Start2)->EnableWindow(TRUE);
+	GetDlgItem(IDC_BUTTON_Suspend)->EnableWindow(FALSE);
+	GetDlgItem(IDC_BUTTON_Resume)->EnableWindow(FALSE);
+	GetDlgItem(IDC_BUTTON_end2)->EnableWindow(FALSE);
+	isStop = true;
 }
 
 
@@ -455,10 +461,11 @@ UINT SubSense::MyThreadFun(LPVOID pParam)
 			Sleep((1000 / 35) - (tend - tbeg));
 		}
     }
-	//while (pDlg->isStop == false)
-	//{
-
-	//}
+	pDlg->GetDlgItem(IDC_BUTTON_Start2)->EnableWindow(TRUE);
+	pDlg->GetDlgItem(IDC_BUTTON_Suspend)->EnableWindow(FALSE);
+	pDlg->GetDlgItem(IDC_BUTTON_Resume)->EnableWindow(FALSE);
+	pDlg->GetDlgItem(IDC_BUTTON_end2)->EnableWindow(FALSE);
+	TerminateThread(pDlg->mythread, 0);
 	return 0;
 }
 
@@ -466,6 +473,10 @@ UINT SubSense::MyThreadFun(LPVOID pParam)
 void SubSense::OnBnClickedButtonSuspend()
 {
 	// TODO: 在此添加控件通知处理程序代码
+	GetDlgItem(IDC_BUTTON_Start2)->EnableWindow(FALSE);
+	GetDlgItem(IDC_BUTTON_Suspend)->EnableWindow(FALSE);
+	GetDlgItem(IDC_BUTTON_Resume)->EnableWindow(TRUE);
+	GetDlgItem(IDC_BUTTON_end2)->EnableWindow(FALSE);
 	mythread->SuspendThread();
 }
 
@@ -473,5 +484,9 @@ void SubSense::OnBnClickedButtonSuspend()
 void SubSense::OnBnClickedButtonResume()
 {
 	// TODO: 在此添加控件通知处理程序代码
+	GetDlgItem(IDC_BUTTON_Start2)->EnableWindow(FALSE);
+	GetDlgItem(IDC_BUTTON_Suspend)->EnableWindow(TRUE);
+	GetDlgItem(IDC_BUTTON_Resume)->EnableWindow(FALSE);
+	GetDlgItem(IDC_BUTTON_end2)->EnableWindow(TRUE);
 	mythread->ResumeThread();
 }

@@ -93,6 +93,7 @@ void MyTestDialog::DrawPicToHDC(IplImage* img, UINT ID)
 	img = img2;
 	CvvImage cimg;
 	cimg.CopyOf(img);
+	cvReleaseImage(&img2);
 	CRect drawRect;
 	drawRect.SetRect(rect.TopLeft().x, rect.TopLeft().y, rect.TopLeft().x + img->width - 1, rect.TopLeft().y + img->height - 1);
 	cimg.DrawToHDC(hDc, &drawRect);
@@ -150,22 +151,15 @@ void MyTestDialog::OnBnClickedOpenimage()
 	{
 		cvReleaseImage(&image);
 	}
-	//cv::Mat matImage;
 
 	char szFilter[] = "BMP files(*.bmp)JPG files(*.jpg)|*.bmp;*.jpg|All files(*.*)|*.*||";
 	CFileDialog ofd(TRUE, NULL, NULL, OFN_HIDEREADONLY| OFN_OVERWRITEPROMPT, szFilter);
 	if (ofd.DoModal() == IDOK)
 	{
 		image = cvLoadImage(ofd.GetPathName(), CV_LOAD_IMAGE_ANYCOLOR);
-		//matImage = cv::imread(ofd.GetPathName().GetBuffer(0), 1);
-		DrawPicToHDC(image, IDC_STATIC);
-		//drawpic(image, IDC_STATIC);
-		
+		DrawPicToHDC(image, IDC_STATIC);	
 	}
-	//image = cvLoadImage("D:\\blue.bmp", 1);
-	//DrawPicToHDC(image, IDC_STATIC);
 	cvReleaseImage(&image);
-	//matImage.release();
 	
 }
 
@@ -272,13 +266,12 @@ void MyTestDialog::drawpic(IplImage* img, unsigned int id)
 void MyTestDialog::OnBnClickedOpenimagemat()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	cv::Mat matImage;
 
+	cv::Mat matImage;
 	char szFilter[] = "BMP files(*.bmp)JPG files(*.jpg)|*.bmp;*.jpg|All files(*.*)|*.*||";
 	CFileDialog ofd(TRUE, NULL, NULL, OFN_HIDEREADONLY| OFN_OVERWRITEPROMPT, szFilter);
 	if (ofd.DoModal() == IDOK)
 	{
-	
 		matImage = cv::imread(ofd.GetPathName().GetBuffer(0), 1);
 		DrawPicToHDC(matImage, IDC_STATIC);
 	}
@@ -289,6 +282,7 @@ void MyTestDialog::OnBnClickedOpenimagemat()
 void MyTestDialog::OnBnClickedVibe()
 {
 	// TODO: 在此添加控件通知处理程序代码
+	//按钮已经删除了
 	CString strPath;
 	GetDlgItemText(IDC_EDIT1, strPath);
 	if (strPath.IsEmpty())
@@ -303,6 +297,7 @@ void MyTestDialog::OnBnClickedVibe()
 
 void MyTestDialog::DoMyVibe(CString& filePath, bool openCamera)
 {
+	//已经不再调用这个，可以删除了
 	//lpll
 	IplImage* pFrame = NULL;
 	IplImage* segmap = NULL;
@@ -349,34 +344,6 @@ void MyTestDialog::DoMyVibe(CString& filePath, bool openCamera)
 	//cvNamedWindow("segment map", 1);
 	//cvMoveWindow("video", 30, 0);
 	//cvMoveWindow("segment map", 690, 0);
-	//if (argc > 3)
-	//{
-	//	fprintf(stderr,"[video_file_name]\n");
-	//	return -1;
-	//}
-
-	//if (argc == 3)
-	//{
-	//	//open video
-	//	if (!(pCapture = cvCaptureFromFile(argv[1])))
-	//	{
-	//		fprintf(stderr, "can not open video file %s\n", argv[1]);
-	//		return -2;
-	//	}
-	//	sOutPath = argv[2];
-	//	cout<<sOutPath<<endl;
-	//	_mkdir(sOutPath.c_str());
-	//}
-	////open camera
-	//if (argc == 1)
-	//{
-	//	if (!(pCapture = cvCaptureFromCAM(-1)))
-	//	{
-	//		fprintf(stderr, "can not open camera.\n");
-	//		return -2;
-	//	}
-	//}
-
 	//打开摄像头
 	if (openCamera == true)
 	{
@@ -599,9 +566,10 @@ void MyTestDialog::OnBnClickedButtonStart()
 	GetDlgItem(IDC_BUTTON_Start)->EnableWindow(FALSE);
 	GetDlgItem(IDC_BUTTON_Suspend)->EnableWindow(TRUE);
 	GetDlgItem(IDC_BUTTON_Resume)->EnableWindow(FALSE);
+	GetDlgItem(IDC_BUTTON_End3)->EnableWindow(TRUE);
 	isContinue = true;
 	mythread = AfxBeginThread(MyTestDialog::DoVibe, this);
-	GetDlgItem(IDC_BUTTON_End3)->EnableWindow(TRUE);
+	
 
 }
 
@@ -928,12 +896,14 @@ UINT MyTestDialog::DoVibe(LPVOID pParam)
 	}
 	if (pDlg->isContinue)
 	{
+		//这个内存泄露怎么解决啊
 		cvReleaseImage(&pFrame);
 
 	}
 	cvReleaseImage(&segmap);
 	cvReleaseImage(simple);
 	cvReleaseCapture(&pCapture);
+	TerminateThread(pDlg->mythread, 0);
 	return 0;
 }
 
@@ -941,7 +911,12 @@ UINT MyTestDialog::DoVibe(LPVOID pParam)
 void MyTestDialog::OnBnClickedButtonEnd3()
 {
 	// TODO: 在此添加控件通知处理程序代码
+	GetDlgItem(IDC_BUTTON_Start)->EnableWindow(TRUE);
+	GetDlgItem(IDC_BUTTON_Suspend)->EnableWindow(FALSE);
+	GetDlgItem(IDC_BUTTON_Resume)->EnableWindow(FALSE);
+	GetDlgItem(IDC_BUTTON_End3)->EnableWindow(FALSE);
 	isContinue = false;
 	//TerminageThread
 	//mythread->ExitInstance();
+	PostThreadMessage(mythread->m_nThreadID,0,0,0); 
 }
