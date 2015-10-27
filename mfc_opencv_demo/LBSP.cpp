@@ -316,3 +316,5 @@ void LBSP::validateROI(cv::Mat& oROI) {
 	cv::Mat(oROI,nROI_inner).copyTo(cv::Mat(oROI_new,nROI_inner));
 	oROI = oROI_new;
 }
+//nafxcw.lib
+//	Nafxcwd.lib

@@ -39,4 +39,9 @@ public:
 	afx_msg void OnBnClickedButtonResume();
 private:
 	CWinThread* mythread;
+	bool isContinue;
+public:
+	// 	static UINT __cdecl MyThreadFun(LPVOID pParam);
+	static UINT DoVibe(LPVOID pParam);
+	afx_msg void OnBnClickedButtonEnd3();
 };

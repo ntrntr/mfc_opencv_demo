@@ -208,6 +208,7 @@ BEGIN
     PUSHBUTTON      "thread start",IDC_BUTTON_Start,701,121,50,14
     PUSHBUTTON      "thread suspend",IDC_BUTTON_Suspend,701,149,50,14
     PUSHBUTTON      "thread resume",IDC_BUTTON_Resume,702,180,50,14
+    PUSHBUTTON      "thread end",IDC_BUTTON_End3,705,210,50,14
 END
 
 IDD_SUBSENSE DIALOGEX 0, 0, 727, 351
