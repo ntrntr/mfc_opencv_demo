@@ -44,4 +44,5 @@ public:
 	// 	static UINT __cdecl MyThreadFun(LPVOID pParam);
 	static UINT DoVibe(LPVOID pParam);
 	afx_msg void OnBnClickedButtonEnd3();
+	afx_msg void OnDropFiles(HDROP hDropInfo);
 };

@@ -63,6 +63,7 @@ BEGIN_MESSAGE_MAP(MyTestDialog, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON_Suspend, &MyTestDialog::OnBnClickedButtonSuspend)
 	ON_BN_CLICKED(IDC_BUTTON_Resume, &MyTestDialog::OnBnClickedButtonResume)
 	ON_BN_CLICKED(IDC_BUTTON_End3, &MyTestDialog::OnBnClickedButtonEnd3)
+	ON_WM_DROPFILES()
 END_MESSAGE_MAP()
 
 
@@ -919,4 +920,28 @@ void MyTestDialog::OnBnClickedButtonEnd3()
 	//TerminageThread
 	//mythread->ExitInstance();
 	PostThreadMessage(mythread->m_nThreadID,0,0,0); 
+}
+
+
+void MyTestDialog::OnDropFiles(HDROP hDropInfo)
+{
+	// TODO: 在此添加消息处理程序代码和/或调用默认值
+	//要创建一个edit类型的
+	//然后dropfiles这里没消息
+	if (hDropInfo)
+	{
+		int nDrag;
+		nDrag = DragQueryFile(hDropInfo, 0xFFFFFFFF, NULL, 0);
+		if (nDrag == 1)
+		{
+			TCHAR Path[MAX_PATH + 1] = {0};
+			int len = DragQueryFile(hDropInfo, 0, Path, MAX_PATH);
+			GetDlgItem(IDC_STATIC_FRAME)->SetWindowText(Path);
+		}
+		else
+		{
+			MessageBox("只要一个文件");
+		}
+	}
+	//CDialog::OnDropFiles(hDropInfo);
 }
