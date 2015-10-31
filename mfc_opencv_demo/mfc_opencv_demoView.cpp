@@ -17,7 +17,7 @@
 #endif
 
 #include "MyTestDialog.h"
-
+#include "IntegerToRoman.h"
 // Cmfc_opencv_demoView
 
 IMPLEMENT_DYNCREATE(Cmfc_opencv_demoView, CView)
@@ -28,6 +28,7 @@ BEGIN_MESSAGE_MAP(Cmfc_opencv_demoView, CView)
 	ON_COMMAND(ID_FILE_PRINT_DIRECT, &CView::OnFilePrint)
 	ON_COMMAND(ID_FILE_PRINT_PREVIEW, &CView::OnFilePrintPreview)
 	ON_COMMAND(ID_MYTEST, &Cmfc_opencv_demoView::OnMytest)
+	ON_COMMAND(ID_Integer_To_Roman, &Cmfc_opencv_demoView::OnIntegerToRoman)
 END_MESSAGE_MAP()
 
 // Cmfc_opencv_demoView 构造/析构
@@ -122,6 +123,35 @@ void Cmfc_opencv_demoView::OnMytest()
 	if (dlg != NULL)
 	{
 		BOOL ret = dlg->Create(IDD_MYTESTDIALOG, this);
+		if (!ret)
+		{
+			MessageBox("create failed");
+		}
+		//CRect clientRect,dlgRect;
+		//GetClientRect(&clientRect);								//获取客户区窗口大小
+		//ClientToScreen(clientRect);								//转换为屏幕坐标
+		//pDialog->GetWindowRect(&dlgRect);						//获取对话框窗口大小
+		////移动对话框窗口
+		//pDialog->MoveWindow(clientRect.left+30, clientRect.top+50,dlgRect.Width(),dlgRect.Height());
+		dlg->ShowWindow(SW_SHOW);						//显示对话框
+		//szOut="创建并在指定位置显示非模态对话框";
+		//Invalidate(true);//更新显示
+	}
+	else
+	{
+		MessageBox("create failed");
+	}
+}
+
+
+void Cmfc_opencv_demoView::OnIntegerToRoman()
+{
+	// TODO: 在此添加命令处理程序代码
+	IntegerToRoman* dlg;
+	dlg = new IntegerToRoman();
+	if (dlg != NULL)
+	{
+		BOOL ret = dlg->Create(IDD_INTEGERTOROMAN, this);
 		if (!ret)
 		{
 			MessageBox("create failed");

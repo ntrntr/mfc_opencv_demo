@@ -43,6 +43,7 @@ protected:
 public:
 	afx_msg void OnBnClickedOpenimage();
 	afx_msg void OnMytest();
+	afx_msg void OnIntegerToRoman();
 };
 
 #ifndef _DEBUG  // mfc_opencv_demoView.cpp 中的调试版本

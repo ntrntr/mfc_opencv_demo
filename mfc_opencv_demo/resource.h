@@ -9,6 +9,7 @@
 #define IDR_MAINFRAME                   128
 #define IDR_mfc_opencv_demoTYPE         130
 #define IDD_SUBSENSE                    311
+#define IDD_INTEGERTOROMAN              312
 #define IDC_BUTTON1                     1000
 #define IDC_OpenImage                   1000
 #define IDC_BUTTON_Break                1000
@@ -31,18 +32,20 @@
 #define IDC_BUTTON_Resume               1016
 #define IDC_BUTTON_Start                1017
 #define IDC_BUTTON_End3                 1021
-#define IDC_EDIT3                       1022
+#define IDC_BUTTON3                     1023
 #define ID_MYMENU_OPENNEWFILE           32771
 #define ID_BUTTON32772                  32772
 #define ID_MYMENU_SUBSENSE              32773
+#define ID_32775                        32775
+#define ID_Integer_To_Roman             32776
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        312
-#define _APS_NEXT_COMMAND_VALUE         32775
-#define _APS_NEXT_CONTROL_VALUE         1023
+#define _APS_NEXT_RESOURCE_VALUE        313
+#define _APS_NEXT_COMMAND_VALUE         32777
+#define _APS_NEXT_CONTROL_VALUE         1024
 #define _APS_NEXT_SYMED_VALUE           310
 #endif
 #endif

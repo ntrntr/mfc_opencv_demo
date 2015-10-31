@@ -94,11 +94,12 @@ void MyTestDialog::DrawPicToHDC(IplImage* img, UINT ID)
 	img = img2;
 	CvvImage cimg;
 	cimg.CopyOf(img);
-	cvReleaseImage(&img2);
+	
 	CRect drawRect;
 	drawRect.SetRect(rect.TopLeft().x, rect.TopLeft().y, rect.TopLeft().x + img->width - 1, rect.TopLeft().y + img->height - 1);
 	cimg.DrawToHDC(hDc, &drawRect);
 	ReleaseDC(pDC);
+	cvReleaseImage(&img2);
 	//cv::imshow("view", img);
 	//path1
 	//cvShowImage("view",img);
@@ -158,7 +159,7 @@ void MyTestDialog::OnBnClickedOpenimage()
 	if (ofd.DoModal() == IDOK)
 	{
 		image = cvLoadImage(ofd.GetPathName(), CV_LOAD_IMAGE_ANYCOLOR);
-		DrawPicToHDC(image, IDC_STATIC);	
+		DrawPicToHDC(image, IDC_STATIC1);	
 	}
 	cvReleaseImage(&image);
 	
@@ -274,7 +275,7 @@ void MyTestDialog::OnBnClickedOpenimagemat()
 	if (ofd.DoModal() == IDOK)
 	{
 		matImage = cv::imread(ofd.GetPathName().GetBuffer(0), 1);
-		DrawPicToHDC(matImage, IDC_STATIC);
+		DrawPicToHDC(matImage, IDC_STATIC1);
 	}
 	matImage.release();
 }
@@ -863,8 +864,11 @@ UINT MyTestDialog::DoVibe(LPVOID pParam)
 			//next frame
 			fgcount = 0;
 		}
-		pDlg->DrawPicToHDC(pFrame, IDC_STATIC);
-		pDlg->DrawPicToHDC(segmap, IDC_STATIC1);
+		pDlg->DrawPicToHDC(pFrame, IDC_STATIC1);
+		pDlg->DrawPicToHDC(segmap, IDC_STATIC2);
+		//pDlg->drawpic(pFrame, IDC_STATIC1);
+		//pDlg->drawpic(segmap, IDC_STATIC2);
+
 
 		CString tmp;
 		tmp.Format("µ±Ç°Ö¡£º %d", nFrmNum);
