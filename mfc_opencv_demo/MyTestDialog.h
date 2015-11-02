@@ -24,14 +24,14 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	
-	afx_msg void OnBnClickedOpenimage();
+//	afx_msg void OnBnClickedOpenimage();
 	virtual BOOL OnInitDialog();
 	void DrawPicToHDC(IplImage* img, UINT ID);
 	void DrawPicToHDC(cv::Mat& img, UINT ID);
 	void drawpic(IplImage* img, unsigned int id);
-	afx_msg void OnBnClickedOpenimagemat();
-	afx_msg void OnBnClickedVibe();
-	void DoMyVibe(CString& filePath, bool openCamera = false);
+//	afx_msg void OnBnClickedOpenimagemat();
+//	afx_msg void OnBnClickedVibe();
+//	void DoMyVibe(CString& filePath, bool openCamera = false);
 	CEdit size;
 	int mySize;
 	afx_msg void OnBnClickedButtonStart();
@@ -43,6 +43,7 @@ private:
 public:
 	// 	static UINT __cdecl MyThreadFun(LPVOID pParam);
 	static UINT DoVibe(LPVOID pParam);
-	afx_msg void OnBnClickedButtonEnd3();
+	afx_msg void OnBnClickedButtonEnd();
 	afx_msg void OnDropFiles(HDROP hDropInfo);
+	int m_radio;
 };

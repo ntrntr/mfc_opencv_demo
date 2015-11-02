@@ -80,6 +80,7 @@ BackgroundSubtractorSuBSENSE::~BackgroundSubtractorSuBSENSE() {
 
 void BackgroundSubtractorSuBSENSE::initialize(const cv::Mat& oInitImg, const cv::Mat& oROI) {
 	// == init
+	
 	CV_Assert(!oInitImg.empty() && oInitImg.cols>0 && oInitImg.rows>0);
 	CV_Assert(oInitImg.isContinuous());
 	CV_Assert(oInitImg.type()==CV_8UC3 || oInitImg.type()==CV_8UC1);

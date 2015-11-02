@@ -36,6 +36,7 @@ IMPLEMENT_DYNAMIC(MyTestDialog, CDialog)
 
 MyTestDialog::MyTestDialog(CWnd* pParent /*=NULL*/)
 	: CDialog(MyTestDialog::IDD, pParent)
+	, m_radio(0)
 {
 
 	mySize = 3;
@@ -52,17 +53,17 @@ void MyTestDialog::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_EDIT2, size);
 	DDX_Text(pDX, IDC_EDIT2, mySize);
 	DDV_MinMaxInt(pDX, mySize, 1, 20);
+	DDX_Radio(pDX, IDC_RADIO1, m_radio);
 }
 
 
 BEGIN_MESSAGE_MAP(MyTestDialog, CDialog)
-	ON_BN_CLICKED(IDC_OpenImage, &MyTestDialog::OnBnClickedOpenimage)
-	ON_BN_CLICKED(IDC_OpenImageMat, &MyTestDialog::OnBnClickedOpenimagemat)
-	ON_BN_CLICKED(IDC_Vibe, &MyTestDialog::OnBnClickedVibe)
+	//ON_BN_CLICKED(IDC_OpenImage, &MyTestDialog::OnBnClickedOpenimage)
+	//ON_BN_CLICKED(IDC_OpenImageMat, &MyTestDialog::OnBnClickedOpenimagemat)
 	ON_BN_CLICKED(IDC_BUTTON_Start, &MyTestDialog::OnBnClickedButtonStart)
 	ON_BN_CLICKED(IDC_BUTTON_Suspend, &MyTestDialog::OnBnClickedButtonSuspend)
 	ON_BN_CLICKED(IDC_BUTTON_Resume, &MyTestDialog::OnBnClickedButtonResume)
-	ON_BN_CLICKED(IDC_BUTTON_End3, &MyTestDialog::OnBnClickedButtonEnd3)
+	ON_BN_CLICKED(IDC_BUTTON_End, &MyTestDialog::OnBnClickedButtonEnd)
 	ON_WM_DROPFILES()
 END_MESSAGE_MAP()
 
@@ -145,25 +146,25 @@ void MyTestDialog::DrawPicToHDC(IplImage* img, UINT ID)
 }
 
 
-void MyTestDialog::OnBnClickedOpenimage()
-{
-	// TODO: 在此添加控件通知处理程序代码
-	IplImage* image = NULL;
-	if (image)
-	{
-		cvReleaseImage(&image);
-	}
-
-	char szFilter[] = "BMP files(*.bmp)JPG files(*.jpg)|*.bmp;*.jpg|All files(*.*)|*.*||";
-	CFileDialog ofd(TRUE, NULL, NULL, OFN_HIDEREADONLY| OFN_OVERWRITEPROMPT, szFilter);
-	if (ofd.DoModal() == IDOK)
-	{
-		image = cvLoadImage(ofd.GetPathName(), CV_LOAD_IMAGE_ANYCOLOR);
-		DrawPicToHDC(image, IDC_STATIC1);	
-	}
-	cvReleaseImage(&image);
-	
-}
+//void MyTestDialog::OnBnClickedOpenimage()
+//{
+//	// TODO: 在此添加控件通知处理程序代码
+//	IplImage* image = NULL;
+//	if (image)
+//	{
+//		cvReleaseImage(&image);
+//	}
+//
+//	char szFilter[] = "BMP files(*.bmp)JPG files(*.jpg)|*.bmp;*.jpg|All files(*.*)|*.*||";
+//	CFileDialog ofd(TRUE, NULL, NULL, OFN_HIDEREADONLY| OFN_OVERWRITEPROMPT, szFilter);
+//	if (ofd.DoModal() == IDOK)
+//	{
+//		image = cvLoadImage(ofd.GetPathName(), CV_LOAD_IMAGE_ANYCOLOR);
+//		DrawPicToHDC(image, IDC_STATIC1);	
+//	}
+//	cvReleaseImage(&image);
+//	
+//}
 
 
 BOOL MyTestDialog::OnInitDialog()
@@ -184,10 +185,10 @@ void MyTestDialog::DrawPicToHDC(cv::Mat& img, UINT ID)
 {
 	//清空
 	CStatic* pStatic = (CStatic*)GetDlgItem(ID);
-	pStatic->SetBitmap(NULL);
+	//pStatic->SetBitmap(NULL);
 	CRect rect;
 	pStatic->GetClientRect(&rect);
-	pStatic->GetDC()->FillSolidRect(rect.left ,rect.top ,rect.Width(),rect.Height(), RGB(240, 240, 240));
+	//pStatic->GetDC()->FillSolidRect(rect.left ,rect.top ,rect.Width(),rect.Height(), RGB(240, 240, 240));
 	////
 
 	CDC* pDC = GetDlgItem(ID)->GetDC();
@@ -195,16 +196,17 @@ void MyTestDialog::DrawPicToHDC(cv::Mat& img, UINT ID)
 
 	//调整大小
 	////////
+	Mat showImage;
 	float widthRatio = (float)rect.Width() / img.cols;
 	float heightRatio = (float)rect.Height() / img.rows;
 	float resRatio = widthRatio < heightRatio ? widthRatio: heightRatio;
 	int resWidth = img.cols * resRatio;
 	int resHeight = img.rows * resRatio;
-	cv::resize(img, img, cv::Size(resWidth, resHeight));
+	cv::resize(img, showImage, cv::Size(resWidth, resHeight));
 	CRect drawRect;
-	drawRect.SetRect(rect.TopLeft().x, rect.TopLeft().y, rect.TopLeft().x + img.cols - 1, rect.TopLeft().y + img.rows - 1);
+	drawRect.SetRect(rect.TopLeft().x, rect.TopLeft().y, rect.TopLeft().x + showImage.cols - 1, rect.TopLeft().y + showImage.rows - 1);
 	///////
-	IplImage* tmpimg = &img.operator IplImage();
+	IplImage* tmpimg = &showImage.operator IplImage();
 	CvvImage iimg;
 	iimg.CopyOf(tmpimg);
 	iimg.DrawToHDC(hDC, &drawRect);
@@ -265,301 +267,301 @@ void MyTestDialog::drawpic(IplImage* img, unsigned int id)
 }
 
 
-void MyTestDialog::OnBnClickedOpenimagemat()
-{
-	// TODO: 在此添加控件通知处理程序代码
-
-	cv::Mat matImage;
-	char szFilter[] = "BMP files(*.bmp)JPG files(*.jpg)|*.bmp;*.jpg|All files(*.*)|*.*||";
-	CFileDialog ofd(TRUE, NULL, NULL, OFN_HIDEREADONLY| OFN_OVERWRITEPROMPT, szFilter);
-	if (ofd.DoModal() == IDOK)
-	{
-		matImage = cv::imread(ofd.GetPathName().GetBuffer(0), 1);
-		DrawPicToHDC(matImage, IDC_STATIC1);
-	}
-	matImage.release();
-}
-
-
-void MyTestDialog::OnBnClickedVibe()
-{
-	// TODO: 在此添加控件通知处理程序代码
-	//按钮已经删除了
-	CString strPath;
-	GetDlgItemText(IDC_EDIT1, strPath);
-	if (strPath.IsEmpty())
-	{
-		MessageBox("empty!!!");
-		return;
-	}
-	DoMyVibe(strPath);
-
-}
+//void MyTestDialog::OnBnClickedOpenimagemat()
+//{
+//	// TODO: 在此添加控件通知处理程序代码
+//
+//	cv::Mat matImage;
+//	char szFilter[] = "BMP files(*.bmp)JPG files(*.jpg)|*.bmp;*.jpg|All files(*.*)|*.*||";
+//	CFileDialog ofd(TRUE, NULL, NULL, OFN_HIDEREADONLY| OFN_OVERWRITEPROMPT, szFilter);
+//	if (ofd.DoModal() == IDOK)
+//	{
+//		matImage = cv::imread(ofd.GetPathName().GetBuffer(0), 1);
+//		DrawPicToHDC(matImage, IDC_STATIC1);
+//	}
+//	matImage.release();
+//}
 
 
-void MyTestDialog::DoMyVibe(CString& filePath, bool openCamera)
-{
-	//已经不再调用这个，可以删除了
-	//lpll
-	IplImage* pFrame = NULL;
-	IplImage* segmap = NULL;
-	IplImage* simple[20] = {NULL};
-	CvCapture* pCapture = NULL;
-	int nFrmNum = 0;
-	int T = 0;
-	//para
-	//number of samples per pixel
-	const int N = 20;
-	//radius of the sphere 
-	const double R = 20;
-	// number of close samples for being part of the background(bg)
-	const int min = 2;
-	//amount of random subsampling
-	const int ts = 16;
+//void MyTestDialog::OnBnClickedVibe()
+//{
+//	// TODO: 在此添加控件通知处理程序代码
+//	//按钮已经删除了
+//	CString strPath;
+//	GetDlgItemText(IDC_EDIT1, strPath);
+//	if (strPath.IsEmpty())
+//	{
+//		MessageBox("empty!!!");
+//		return;
+//	}
+//	//DoMyVibe(strPath);
+//
+//}
 
-	//patchsize
-	const int patchsize = mySize;
-	vector<int> c_xoff(patchsize);
-	vector<int> c_yoff(patchsize);
-	for (int tmp = -patchsize / 2, i = 0; i < patchsize; ++i, ++tmp)
-	{
-		c_xoff[i] = tmp;
-		c_yoff[i] = tmp;
-	}
 
-	int height, width, step, chanels;
-	uchar* data;
-	uchar* simdata[N];
-	uchar* sg;
-	int change = 0;
-	//index
-	int index;
-	//light threshold
-	double beta;
-	//foreground count , judge light change
-	int fgcount = 0;
-	int i, j , x, y;
-	string sOutPath;
-	char str[256];
-	int count = 1;
-	//cvNamedWindow("video", 1);
-	//cvNamedWindow("segment map", 1);
-	//cvMoveWindow("video", 30, 0);
-	//cvMoveWindow("segment map", 690, 0);
-	//打开摄像头
-	if (openCamera == true)
-	{
-		if (!(pCapture = cvCaptureFromCAM(-1)))
-		{
-			MessageBox("can not open camera.\n");
-			return;
-		}
-	}
-	else
-	{
-			//open video
-			if (!(pCapture = cvCaptureFromFile(filePath.GetBuffer(0))))
-			{
-				CString tmp;
-				tmp.Format("can not open video file %s\n", filePath);
-				MessageBox(tmp, "请输入正确的文件");
-
-				return;
-			}
-			sOutPath = filePath.GetBuffer(0);
-			//cout<<sOutPath<<endl;
-			//_mkdir(sOutPath.c_str());
-	}
-
-	srand((int)time(NULL));
-	//get every image of the video
-	clock_t start, finish;
-	while (pFrame = cvQueryFrame(pCapture))
-	{
-		start = clock();
-		++nFrmNum;
-		++T;
-		//gaussian filter to smooth
-		cvSmooth(pFrame, pFrame, CV_GAUSSIAN, 3, 3);
-		//get image data
-		data = (uchar*)pFrame->imageData;
-		//the first image
-		if (nFrmNum == 1)
-		{
-			//N = 20
-			for (index = 0; index < N; ++index)
-			{
-				simple[index] = cvCreateImage(cvSize(pFrame->width, pFrame->height), IPL_DEPTH_8U, 3);
-				simdata[index] = (uchar*)simple[index]->imageData;
-
-			}
-
-			segmap = cvCreateImage(cvSize(pFrame->width, pFrame->height), IPL_DEPTH_8U, 1);
-			sg = (uchar*) segmap->imageData;
-			height = pFrame->height;
-			width = pFrame->width;
-			//step is the bytes of each line
-			step = pFrame->widthStep;
-			//chanels ,for rgb is 3
-			chanels = pFrame->nChannels;
-			//light threshold, 55% of the image change to foregrond, means have a light change
-			beta = 0.55 * height * width;
-		}
-		//init
-		if (T == 1)
-		{
-			//every pixel have 20 samples,not random
-			for (index = 0; index < N; ++index)
-			{
-				for (i = 0; i < height; ++i)
-				{
-					for (j = 0; j < width; ++j)
-					{
-						int tmp = random(0,patchsize);
-						x = i + c_yoff[tmp];
-						//cout<<"tmp = "<<tmp <<"\t"<<"c_yoff[tmp] = "<<c_yoff[tmp]<<endl;
-						if (x < 0)
-						{
-							x = -x;
-						}
-						if (x >= height)
-						{
-							x = 2 * (height - 1) - height;
-						}
-						tmp = random(0,patchsize);
-						y = j + c_xoff[tmp];
-						//cout<<"tmp = "<<tmp <<"\t"<<"c_xoff[tmp] = "<<c_xoff[tmp]<<endl;
-						if (y < 0)
-						{
-							y = -y;
-						}
-						if (y >= width)
-						{
-							y = 2 * (width - 1) - width;
-						}
-						for (int k = 0; k < 3; ++k)
-						{
-							//data = image data;
-							simdata[index][i * step + j * chanels + k] = data[x * step + y * chanels + k];
-						}
-
-					}
-				}
-			}
-		}
-		if (T != 1 /*&& nFrmNum%3 == 2*/)
-		{
-			double a[3] = {0, 0, 0};
-			for (x = 1; x < width - 1; ++x)
-			{
-				for (y = 1; y < height - 1; ++y)
-				{
-					//y height, x width 
-					//compare pixel to background model
-					int count = 0;
-					double dist = 0;
-					index = 0;
-					while ( count < min && index < N)
-					{
-						//euclidean distance computation
-						a[0] = data[y * step + x * chanels + 0] - simdata[index][y * step + x * chanels + 0];
-						a[1] = data[y * step + x * chanels + 1] - simdata[index][y * step + x * chanels + 1];
-						a[2] = data[y * step + x * chanels + 2] - simdata[index][y * step + x * chanels + 2];
-
-						dist = sqrt(a[0] * a[0] + a[1] * a[1] + a[2] * a[2]);
-						if (dist < R)
-						{
-							++count;
-						}
-						++index;
-					}
-					//classify pixel and update model
-					if (count >= min)
-					{
-						//store that image[x][y] to background
-						sg[y * segmap->widthStep + x] = 0;
-						//sg[y * step + x * chanels + 1] = 0;
-						//sg[y * step + x * chanels + 2] = 0;
-						//1 / ts to change
-						int rdm = random(0, ts); 
-						if (rdm == 0)
-						{
-							rdm = random(0, N);
-							simdata[rdm][y * step + x * chanels + 0] = data[y * step + x * chanels + 0];
-							simdata[rdm][y * step + x * chanels + 1] = data[y * step + x * chanels + 1];
-							simdata[rdm][y * step + x * chanels + 2] = data[y * step + x * chanels + 2];
-						}
-						//update neighboring pixel model
-						rdm = random(0, ts);
-						if (rdm == 0)
-						{
-							int xng = 0;
-							int yng = 0;
-							while (xng == 0 && yng == 0)
-							{
-								xng = random(-1, 2); //[-1,1]
-								yng = random(-1, 2); //[-1,1]
-							}
-							rdm = random(0, ts);
-							//x∈[1,width -2],y∈[1,height -2],so will not out of range
-							simdata[rdm][(y + yng) * step + (x + xng) * chanels + 0] = data[y * step + x * chanels + 0];
-							simdata[rdm][(y + yng) * step + (x + xng) * chanels + 1] = data[y * step + x * chanels + 1];
-							simdata[rdm][(y + yng) * step + (x + xng) * chanels + 2] = data[y * step + x * chanels + 2];
-						}
-
-					}
-					else
-					{
-						// count < min
-						//store that image[x][y] = foreground;
-						sg[y * segmap->widthStep + x] = 255;
-						//sg[y * step + x * chanels + 1] = 255;
-						//sg[y * step + x * chanels + 2] = 255;
-						++fgcount;
-					}
-				}
-			}
-			if (fgcount > beta)
-			{
-				T = 0;
-			}
-			//next frame
-			fgcount = 0;
-		}
-		DrawPicToHDC(pFrame, IDC_STATIC);
-		DrawPicToHDC(segmap, IDC_STATIC1);
-
-		CString tmp;
-		tmp.Format("当前帧： %d", nFrmNum);
-		GetDlgItem(IDC_STATIC_FRAME)->SetWindowText(tmp);
-		//cvShowImage("video", pFrame);
-		//cvShowImage("segment map", segmap);
-		//char* str;
-		//sprintf(str,"bin%06d.pgm",count++);
-		//imwrite(sOutPath + str, segmap);
-		//string mypath = sOutPath + str;
-		//cvSaveImage(str, segmap);
-		//sprintf()
-		//string tmp = sOutPath + str;
-		//cout<<tmp<<endl;
-		//cvSaveImage(tmp.c_str(), segmap);
-		//if (cvWaitKey(2) >= 0)
-		//{
-		//	break;
-		//}
-		//waitKey(0);
-		finish = clock();
-		if (finish - start < (1000 / 35))
-		{
-			Sleep((1000 / 35) - (finish - start));
-		}
-	}
-
-	cvReleaseImage(&pFrame);
-	cvReleaseImage(&segmap);
-	cvReleaseImage(simple);
-	cvReleaseCapture(&pCapture);
-}
+//void MyTestDialog::DoMyVibe(CString& filePath, bool openCamera)
+//{
+//	//已经不再调用这个，可以删除了
+//	//lpll
+//	IplImage* pFrame = NULL;
+//	IplImage* segmap = NULL;
+//	IplImage* simple[20] = {NULL};
+//	CvCapture* pCapture = NULL;
+//	int nFrmNum = 0;
+//	int T = 0;
+//	//para
+//	//number of samples per pixel
+//	const int N = 20;
+//	//radius of the sphere 
+//	const double R = 20;
+//	// number of close samples for being part of the background(bg)
+//	const int min = 2;
+//	//amount of random subsampling
+//	const int ts = 16;
+//
+//	//patchsize
+//	const int patchsize = mySize;
+//	vector<int> c_xoff(patchsize);
+//	vector<int> c_yoff(patchsize);
+//	for (int tmp = -patchsize / 2, i = 0; i < patchsize; ++i, ++tmp)
+//	{
+//		c_xoff[i] = tmp;
+//		c_yoff[i] = tmp;
+//	}
+//
+//	int height, width, step, chanels;
+//	uchar* data;
+//	uchar* simdata[N];
+//	uchar* sg;
+//	int change = 0;
+//	//index
+//	int index;
+//	//light threshold
+//	double beta;
+//	//foreground count , judge light change
+//	int fgcount = 0;
+//	int i, j , x, y;
+//	string sOutPath;
+//	char str[256];
+//	int count = 1;
+//	//cvNamedWindow("video", 1);
+//	//cvNamedWindow("segment map", 1);
+//	//cvMoveWindow("video", 30, 0);
+//	//cvMoveWindow("segment map", 690, 0);
+//	//打开摄像头
+//	if (openCamera == true)
+//	{
+//		if (!(pCapture = cvCaptureFromCAM(-1)))
+//		{
+//			MessageBox("can not open camera.\n");
+//			return;
+//		}
+//	}
+//	else
+//	{
+//			//open video
+//			if (!(pCapture = cvCaptureFromFile(filePath.GetBuffer(0))))
+//			{
+//				CString tmp;
+//				tmp.Format("can not open video file %s\n", filePath);
+//				MessageBox(tmp, "请输入正确的文件");
+//
+//				return;
+//			}
+//			sOutPath = filePath.GetBuffer(0);
+//			//cout<<sOutPath<<endl;
+//			//_mkdir(sOutPath.c_str());
+//	}
+//
+//	srand((int)time(NULL));
+//	//get every image of the video
+//	clock_t start, finish;
+//	while (pFrame = cvQueryFrame(pCapture))
+//	{
+//		start = clock();
+//		++nFrmNum;
+//		++T;
+//		//gaussian filter to smooth
+//		cvSmooth(pFrame, pFrame, CV_GAUSSIAN, 3, 3);
+//		//get image data
+//		data = (uchar*)pFrame->imageData;
+//		//the first image
+//		if (nFrmNum == 1)
+//		{
+//			//N = 20
+//			for (index = 0; index < N; ++index)
+//			{
+//				simple[index] = cvCreateImage(cvSize(pFrame->width, pFrame->height), IPL_DEPTH_8U, 3);
+//				simdata[index] = (uchar*)simple[index]->imageData;
+//
+//			}
+//
+//			segmap = cvCreateImage(cvSize(pFrame->width, pFrame->height), IPL_DEPTH_8U, 1);
+//			sg = (uchar*) segmap->imageData;
+//			height = pFrame->height;
+//			width = pFrame->width;
+//			//step is the bytes of each line
+//			step = pFrame->widthStep;
+//			//chanels ,for rgb is 3
+//			chanels = pFrame->nChannels;
+//			//light threshold, 55% of the image change to foregrond, means have a light change
+//			beta = 0.55 * height * width;
+//		}
+//		//init
+//		if (T == 1)
+//		{
+//			//every pixel have 20 samples,not random
+//			for (index = 0; index < N; ++index)
+//			{
+//				for (i = 0; i < height; ++i)
+//				{
+//					for (j = 0; j < width; ++j)
+//					{
+//						int tmp = random(0,patchsize);
+//						x = i + c_yoff[tmp];
+//						//cout<<"tmp = "<<tmp <<"\t"<<"c_yoff[tmp] = "<<c_yoff[tmp]<<endl;
+//						if (x < 0)
+//						{
+//							x = -x;
+//						}
+//						if (x >= height)
+//						{
+//							x = 2 * (height - 1) - height;
+//						}
+//						tmp = random(0,patchsize);
+//						y = j + c_xoff[tmp];
+//						//cout<<"tmp = "<<tmp <<"\t"<<"c_xoff[tmp] = "<<c_xoff[tmp]<<endl;
+//						if (y < 0)
+//						{
+//							y = -y;
+//						}
+//						if (y >= width)
+//						{
+//							y = 2 * (width - 1) - width;
+//						}
+//						for (int k = 0; k < 3; ++k)
+//						{
+//							//data = image data;
+//							simdata[index][i * step + j * chanels + k] = data[x * step + y * chanels + k];
+//						}
+//
+//					}
+//				}
+//			}
+//		}
+//		if (T != 1 /*&& nFrmNum%3 == 2*/)
+//		{
+//			double a[3] = {0, 0, 0};
+//			for (x = 1; x < width - 1; ++x)
+//			{
+//				for (y = 1; y < height - 1; ++y)
+//				{
+//					//y height, x width 
+//					//compare pixel to background model
+//					int count = 0;
+//					double dist = 0;
+//					index = 0;
+//					while ( count < min && index < N)
+//					{
+//						//euclidean distance computation
+//						a[0] = data[y * step + x * chanels + 0] - simdata[index][y * step + x * chanels + 0];
+//						a[1] = data[y * step + x * chanels + 1] - simdata[index][y * step + x * chanels + 1];
+//						a[2] = data[y * step + x * chanels + 2] - simdata[index][y * step + x * chanels + 2];
+//
+//						dist = sqrt(a[0] * a[0] + a[1] * a[1] + a[2] * a[2]);
+//						if (dist < R)
+//						{
+//							++count;
+//						}
+//						++index;
+//					}
+//					//classify pixel and update model
+//					if (count >= min)
+//					{
+//						//store that image[x][y] to background
+//						sg[y * segmap->widthStep + x] = 0;
+//						//sg[y * step + x * chanels + 1] = 0;
+//						//sg[y * step + x * chanels + 2] = 0;
+//						//1 / ts to change
+//						int rdm = random(0, ts); 
+//						if (rdm == 0)
+//						{
+//							rdm = random(0, N);
+//							simdata[rdm][y * step + x * chanels + 0] = data[y * step + x * chanels + 0];
+//							simdata[rdm][y * step + x * chanels + 1] = data[y * step + x * chanels + 1];
+//							simdata[rdm][y * step + x * chanels + 2] = data[y * step + x * chanels + 2];
+//						}
+//						//update neighboring pixel model
+//						rdm = random(0, ts);
+//						if (rdm == 0)
+//						{
+//							int xng = 0;
+//							int yng = 0;
+//							while (xng == 0 && yng == 0)
+//							{
+//								xng = random(-1, 2); //[-1,1]
+//								yng = random(-1, 2); //[-1,1]
+//							}
+//							rdm = random(0, ts);
+//							//x∈[1,width -2],y∈[1,height -2],so will not out of range
+//							simdata[rdm][(y + yng) * step + (x + xng) * chanels + 0] = data[y * step + x * chanels + 0];
+//							simdata[rdm][(y + yng) * step + (x + xng) * chanels + 1] = data[y * step + x * chanels + 1];
+//							simdata[rdm][(y + yng) * step + (x + xng) * chanels + 2] = data[y * step + x * chanels + 2];
+//						}
+//
+//					}
+//					else
+//					{
+//						// count < min
+//						//store that image[x][y] = foreground;
+//						sg[y * segmap->widthStep + x] = 255;
+//						//sg[y * step + x * chanels + 1] = 255;
+//						//sg[y * step + x * chanels + 2] = 255;
+//						++fgcount;
+//					}
+//				}
+//			}
+//			if (fgcount > beta)
+//			{
+//				T = 0;
+//			}
+//			//next frame
+//			fgcount = 0;
+//		}
+//		DrawPicToHDC(pFrame, IDC_STATIC);
+//		DrawPicToHDC(segmap, IDC_STATIC1);
+//
+//		CString tmp;
+//		tmp.Format("当前帧： %d", nFrmNum);
+//		GetDlgItem(IDC_STATIC_FRAME)->SetWindowText(tmp);
+//		//cvShowImage("video", pFrame);
+//		//cvShowImage("segment map", segmap);
+//		//char* str;
+//		//sprintf(str,"bin%06d.pgm",count++);
+//		//imwrite(sOutPath + str, segmap);
+//		//string mypath = sOutPath + str;
+//		//cvSaveImage(str, segmap);
+//		//sprintf()
+//		//string tmp = sOutPath + str;
+//		//cout<<tmp<<endl;
+//		//cvSaveImage(tmp.c_str(), segmap);
+//		//if (cvWaitKey(2) >= 0)
+//		//{
+//		//	break;
+//		//}
+//		//waitKey(0);
+//		finish = clock();
+//		if (finish - start < (1000 / 35))
+//		{
+//			Sleep((1000 / 35) - (finish - start));
+//		}
+//	}
+//
+//	cvReleaseImage(&pFrame);
+//	cvReleaseImage(&segmap);
+//	cvReleaseImage(simple);
+//	cvReleaseCapture(&pCapture);
+//}
 
 
 void MyTestDialog::OnBnClickedButtonStart()
@@ -568,7 +570,7 @@ void MyTestDialog::OnBnClickedButtonStart()
 	GetDlgItem(IDC_BUTTON_Start)->EnableWindow(FALSE);
 	GetDlgItem(IDC_BUTTON_Suspend)->EnableWindow(TRUE);
 	GetDlgItem(IDC_BUTTON_Resume)->EnableWindow(FALSE);
-	GetDlgItem(IDC_BUTTON_End3)->EnableWindow(TRUE);
+	GetDlgItem(IDC_BUTTON_End)->EnableWindow(TRUE);
 	isContinue = true;
 	mythread = AfxBeginThread(MyTestDialog::DoVibe, this);
 	
@@ -582,7 +584,7 @@ void MyTestDialog::OnBnClickedButtonSuspend()
 	GetDlgItem(IDC_BUTTON_Start)->EnableWindow(FALSE);
 	GetDlgItem(IDC_BUTTON_Suspend)->EnableWindow(FALSE);
 	GetDlgItem(IDC_BUTTON_Resume)->EnableWindow(TRUE);
-	GetDlgItem(IDC_BUTTON_End3)->EnableWindow(FALSE);
+	GetDlgItem(IDC_BUTTON_End)->EnableWindow(FALSE);
 	mythread->SuspendThread();
 }
 
@@ -593,7 +595,7 @@ void MyTestDialog::OnBnClickedButtonResume()
 	GetDlgItem(IDC_BUTTON_Start)->EnableWindow(FALSE);
 	GetDlgItem(IDC_BUTTON_Suspend)->EnableWindow(TRUE);
 	GetDlgItem(IDC_BUTTON_Resume)->EnableWindow(FALSE);
-	GetDlgItem(IDC_BUTTON_End3)->EnableWindow(TRUE);
+	GetDlgItem(IDC_BUTTON_End)->EnableWindow(TRUE);
 	mythread->ResumeThread();
 }
 
@@ -609,10 +611,10 @@ UINT MyTestDialog::DoVibe(LPVOID pParam)
 		return -1;
 	}
 	//lpll
-	IplImage* pFrame = NULL;
-	IplImage* segmap = NULL;
-	IplImage* simple[20] = {NULL};
-	CvCapture* pCapture = NULL;
+	Mat pFrame;
+	Mat segmap;
+	Mat simple[20];
+	VideoCapture oVideoInput;
 	int nFrmNum = 0;
 	int T = 0;
 	//para
@@ -686,7 +688,8 @@ UINT MyTestDialog::DoVibe(LPVOID pParam)
 	const bool openCamera = false;
 	if (openCamera == true)
 	{
-		if (!(pCapture = cvCaptureFromCAM(-1)))
+		oVideoInput.open(0);
+		if (!(oVideoInput.isOpened()))
 		{
 			pDlg->MessageBox("can not open camera.\n");
 			return 0;
@@ -695,7 +698,8 @@ UINT MyTestDialog::DoVibe(LPVOID pParam)
 	else
 	{
 		//open video
-		if (!(pCapture = cvCaptureFromFile(filePath.GetBuffer(0))))
+		oVideoInput.open(filePath.GetBuffer(0));
+		if (!oVideoInput.isOpened())
 		{
 			CString tmp;
 			tmp.Format("can not open video file %s\n", filePath);
@@ -711,35 +715,41 @@ UINT MyTestDialog::DoVibe(LPVOID pParam)
 	srand((int)time(NULL));
 	//get every image of the video
 	clock_t start, finish;
-	while (pFrame = cvQueryFrame(pCapture))
+	while (TRUE)
 	{
-		
+		oVideoInput>>pFrame;
+		if (pFrame.empty())
+		{
+			break;
+		}
 		start = clock();
 		++nFrmNum;
 		++T;
 		//gaussian filter to smooth
-		cvSmooth(pFrame, pFrame, CV_GAUSSIAN, 3, 3);
+		GaussianBlur(pFrame, pFrame, Size(3,3), 0);
+		//cvSmooth(pFrame, pFrame, CV_GAUSSIAN, 3, 3);
 		//get image data
-		data = (uchar*)pFrame->imageData;
+		data = (uchar*)pFrame.data;
 		//the first image
 		if (nFrmNum == 1)
 		{
 			//N = 20
 			for (index = 0; index < N; ++index)
 			{
-				simple[index] = cvCreateImage(cvSize(pFrame->width, pFrame->height), IPL_DEPTH_8U, 3);
-				simdata[index] = (uchar*)simple[index]->imageData;
+				simple[index].create(pFrame.size(), CV_8UC3);
+				//simple[index] = cvCreateImage(cvSize(pFrame->width, pFrame->height), IPL_DEPTH_8U, 3);
+				simdata[index] = (uchar*)simple[index].data;
 
 			}
-
-			segmap = cvCreateImage(cvSize(pFrame->width, pFrame->height), IPL_DEPTH_8U, 1);
-			sg = (uchar*) segmap->imageData;
-			height = pFrame->height;
-			width = pFrame->width;
+			segmap.create(pFrame.size(), CV_8UC1);
+			//segmap = cvCreateImage(cvSize(pFrame->width, pFrame->height), IPL_DEPTH_8U, 1);
+			sg = (uchar*) segmap.data;
+			height = pFrame.rows;
+			width = pFrame.cols;
 			//step is the bytes of each line
-			step = pFrame->widthStep;
+			step = pFrame.step[0];
 			//chanels ,for rgb is 3
-			chanels = pFrame->nChannels;
+			chanels = pFrame.channels();
 			//light threshold, 55% of the image change to foregrond, means have a light change
 			beta = 0.55 * height * width;
 		}
@@ -815,7 +825,7 @@ UINT MyTestDialog::DoVibe(LPVOID pParam)
 					if (count >= min)
 					{
 						//store that image[x][y] to background
-						sg[y * segmap->widthStep + x] = 0;
+						sg[y * segmap.step[0] + x * segmap.step[1]] = 0;
 						//sg[y * step + x * chanels + 1] = 0;
 						//sg[y * step + x * chanels + 2] = 0;
 						//1 / ts to change
@@ -850,7 +860,7 @@ UINT MyTestDialog::DoVibe(LPVOID pParam)
 					{
 						// count < min
 						//store that image[x][y] = foreground;
-						sg[y * segmap->widthStep + x] = 255;
+						sg[y * segmap.step[0] + x * segmap.step[1]] = 255;
 						//sg[y * step + x * chanels + 1] = 255;
 						//sg[y * step + x * chanels + 2] = 255;
 						++fgcount;
@@ -871,7 +881,8 @@ UINT MyTestDialog::DoVibe(LPVOID pParam)
 
 
 		CString tmp;
-		tmp.Format("当前帧： %d", nFrmNum);
+		finish = clock();
+		tmp.Format("当前帧： %d, 耗时：%d ms", nFrmNum, finish - start);
 		pDlg->GetDlgItem(IDC_STATIC_FRAME)->SetWindowText(tmp);
 		//cvShowImage("video", pFrame);
 		//cvShowImage("segment map", segmap);
@@ -889,7 +900,7 @@ UINT MyTestDialog::DoVibe(LPVOID pParam)
 		//	break;
 		//}
 		//waitKey(0);
-		finish = clock();
+		
 		if (finish - start < (1000 / 35))
 		{
 			Sleep((1000 / 35) - (finish - start));
@@ -899,27 +910,23 @@ UINT MyTestDialog::DoVibe(LPVOID pParam)
 			break;
 		}
 	}
-	if (pDlg->isContinue)
-	{
-		//这个内存泄露怎么解决啊
-		cvReleaseImage(&pFrame);
-
-	}
-	cvReleaseImage(&segmap);
-	cvReleaseImage(simple);
-	cvReleaseCapture(&pCapture);
+	pDlg->GetDlgItem(IDC_BUTTON_Start)->EnableWindow(TRUE);
+	pDlg->GetDlgItem(IDC_BUTTON_Suspend)->EnableWindow(FALSE);
+	pDlg->GetDlgItem(IDC_BUTTON_Resume)->EnableWindow(FALSE);
+	pDlg->GetDlgItem(IDC_BUTTON_End)->EnableWindow(FALSE);
+	pDlg->isContinue = false;
 	TerminateThread(pDlg->mythread, 0);
 	return 0;
 }
 
 
-void MyTestDialog::OnBnClickedButtonEnd3()
+void MyTestDialog::OnBnClickedButtonEnd()
 {
 	// TODO: 在此添加控件通知处理程序代码
 	GetDlgItem(IDC_BUTTON_Start)->EnableWindow(TRUE);
 	GetDlgItem(IDC_BUTTON_Suspend)->EnableWindow(FALSE);
 	GetDlgItem(IDC_BUTTON_Resume)->EnableWindow(FALSE);
-	GetDlgItem(IDC_BUTTON_End3)->EnableWindow(FALSE);
+	GetDlgItem(IDC_BUTTON_End)->EnableWindow(FALSE);
 	isContinue = false;
 	//TerminageThread
 	//mythread->ExitInstance();
