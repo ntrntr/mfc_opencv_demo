@@ -16,6 +16,9 @@
     <Filter Include="头文件\subsense">
       <UniqueIdentifier>{0ddc733f-3149-4411-b0e3-5e61075f416e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\codebook">
+      <UniqueIdentifier>{bc67be90-da9e-4ae0-ab96-5e17f749b6cf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -69,6 +72,12 @@
     <ClInclude Include="IntegerToRoman.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="DragEdit.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="YzxCodeBook.h">
+      <Filter>头文件\codebook</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="mfc_opencv_demo.cpp">
@@ -109,6 +118,12 @@
     </ClCompile>
     <ClCompile Include="IntegerToRoman.cpp">
       <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="DragEdit.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="YzxCodeBook.cpp">
+      <Filter>头文件\codebook</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
