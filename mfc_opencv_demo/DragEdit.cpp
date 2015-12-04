@@ -52,7 +52,7 @@ void DragEdit::OnDropFiles(HDROP hDropInfo)
 	for (WORD x = 0 ; x < wNumFilesDropped; x++) //只记录第一个拖动的文件
 	{
 		WORD wPathnameSize = DragQueryFile(hDropInfo, x, NULL, 0);
-		char * npszFile = (char *) LocalAlloc(LPTR, wPathnameSize += 1);//分配内存
+		LPTSTR  npszFile = (LPTSTR) LocalAlloc(LPTR, wPathnameSize += 1);//分配内存
 		if (npszFile == NULL) 
 			continue;
 		DragQueryFile(hDropInfo, x, npszFile, wPathnameSize);//获取拖放的文件名

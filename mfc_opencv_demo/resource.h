@@ -42,6 +42,8 @@
 #define IDC_CHECK_SAVE                  1028
 #define IDC_EDIT_output_path            1029
 #define IDC_EDIT_cal_speed              1030
+#define IDC_MFCLINK1                    1066
+#define IDC_LIST2                       1074
 #define ID_MYMENU_OPENNEWFILE           32771
 #define ID_BUTTON32772                  32772
 #define ID_MYMENU_SUBSENSE              32773
@@ -52,9 +54,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        313
+#define _APS_NEXT_RESOURCE_VALUE        316
 #define _APS_NEXT_COMMAND_VALUE         32777
-#define _APS_NEXT_CONTROL_VALUE         1031
+#define _APS_NEXT_CONTROL_VALUE         1075
 #define _APS_NEXT_SYMED_VALUE           310
 #endif
 #endif

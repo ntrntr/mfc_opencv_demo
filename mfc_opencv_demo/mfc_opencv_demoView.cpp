@@ -29,6 +29,7 @@ BEGIN_MESSAGE_MAP(Cmfc_opencv_demoView, CView)
 	ON_COMMAND(ID_FILE_PRINT_PREVIEW, &CView::OnFilePrintPreview)
 	ON_COMMAND(ID_MYTEST, &Cmfc_opencv_demoView::OnMytest)
 	ON_COMMAND(ID_Integer_To_Roman, &Cmfc_opencv_demoView::OnIntegerToRoman)
+	ON_WM_CREATE()
 END_MESSAGE_MAP()
 
 // Cmfc_opencv_demoView 构造/析构
@@ -170,4 +171,16 @@ void Cmfc_opencv_demoView::OnIntegerToRoman()
 	{
 		MessageBox("create failed");
 	}
+}
+
+
+int Cmfc_opencv_demoView::OnCreate(LPCREATESTRUCT lpCreateStruct)
+{
+	if (CView::OnCreate(lpCreateStruct) == -1)
+		return -1;
+
+	// TODO:  在此添加您专用的创建代码
+	myDioalog.Create(IDD_MYTESTDIALOG, this);
+	myDioalog.ShowWindow(SW_SHOW);
+	return 0;
 }

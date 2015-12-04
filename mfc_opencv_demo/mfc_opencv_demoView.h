@@ -3,7 +3,7 @@
 //
 
 #pragma once
-
+#include "MyTestDialog.h"
 
 class Cmfc_opencv_demoView : public CView
 {
@@ -30,6 +30,7 @@ protected:
 // 实现
 public:
 	virtual ~Cmfc_opencv_demoView();
+	MyTestDialog myDioalog;
 #ifdef _DEBUG
 	virtual void AssertValid() const;
 	virtual void Dump(CDumpContext& dc) const;
@@ -44,6 +45,7 @@ public:
 	afx_msg void OnBnClickedOpenimage();
 	afx_msg void OnMytest();
 	afx_msg void OnIntegerToRoman();
+	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 };
 
 #ifndef _DEBUG  // mfc_opencv_demoView.cpp 中的调试版本
